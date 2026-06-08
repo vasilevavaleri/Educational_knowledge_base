@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mediawiki
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mediawiki
+  template:
+    metadata:
+      labels:
+        app: mediawiki
+    spec:
+      containers:
+      - name: mediawiki
+        image: mediawiki:1.39
+        ports:
+        - containerPort: 80
+        env:
+        - name: MEDIAWIKI_DB_HOST
+          value: "mediawiki-mysql"
+        - name: MEDIAWIKI_DB_NAME
+          value: "mediawiki"
+        - name: MEDIAWIKI_DB_USER
+          value: "wikiuser"
+        - name: MEDIAWIKI_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mediawiki-secret
+              key: db-password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mediawiki
+  namespace: default
+spec:
+  selector:
+    app: mediawiki
+  ports:
+  - port: 80
+    targetPort: 80
