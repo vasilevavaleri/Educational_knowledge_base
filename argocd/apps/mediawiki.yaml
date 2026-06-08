@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mediawiki
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/vasilevavaleri/Educational_knowledge_base.git
+    targetRevision: HEAD
+    path: argocd/apps/mediawiki
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
